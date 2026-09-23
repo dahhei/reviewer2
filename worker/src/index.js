@@ -11,10 +11,8 @@ const ALLOWED_ORIGINS = new Set([
 const TOGETHER_URL = 'https://api.together.xyz/v1/chat/completions';
 const MAX_TOKENS = 300;
 
-// Verify these against Together's live model list (dashboard, or GET /v1/models)
-// before relying on them — both replace models Together has since retired.
 const REVIEWER_MODEL = 'meta-llama/Llama-3.3-70B-Instruct-Turbo';
-const EDITOR_MODEL = 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo';
+const EDITOR_MODEL = 'Qwen/Qwen3.8-Flash';
 
 function corsHeaders(origin) {
   const headers = {
