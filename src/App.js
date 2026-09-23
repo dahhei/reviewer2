@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Together from 'together-ai';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog, faInfoCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -44,17 +43,10 @@ const App = () => {
   const MAX_MONTHLY_COST = 15;
   const COST_PER_MILLION_TOKENS = 0.88;
   const MAX_MONTHLY_TOKENS = (MAX_MONTHLY_COST / COST_PER_MILLION_TOKENS) * 1_000_000;
-  const MAX_TOKENS_PER_RESPONSE = 300;
   const MAX_TOKENS_PER_INPUT = 500;
   const MAX_TRIES_PER_DAY = 10;
 
-  const apiKey = process.env.REACT_APP_TOGETHER_API_KEY;
-
-  if (!apiKey) {
-    console.error('API key is missing. Please set REACT_APP_TOGETHER_API_KEY in your .env file.');
-  }
-
-  const together = new Together({ apiKey });
+  const WORKER_URL = process.env.REACT_APP_WORKER_URL || 'http://localhost:8787';
 
   useEffect(() => {
     const storedTokenCount = parseInt(localStorage.getItem('tokenCount'), 10) || 0;
@@ -160,12 +152,11 @@ const App = () => {
       setAbstract('');
 
       if (!isRebuttal) {
-        const res = await together.chat.completions.create({
-          messages: newMessages,
-          model: 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo',
-          temperature: temperature,
-          max_tokens: MAX_TOKENS_PER_RESPONSE,
-        });
+        const res = await fetch(`${WORKER_URL}/api/review`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: newMessages, temperature }),
+        }).then(r => r.json());
 
         const responseText = res.choices[0]?.message?.content || "No response from reviewer";
         const tokensUsed = responseText.split(' ').length;
@@ -222,14 +213,11 @@ const App = () => {
 
       const editorPrompt = `As the Editor, evaluate whether the author's abstract should be published based on the following information: the author's original abstract, the reviewer's comments on the abstract, and the author's rebuttal to those comments. Please make your decision considering the merits of the abstract itself, and how well the rebuttal addresses the reviewer's critiques. Also, this is a prestigious journal, so remember to be very selective and be more inclined to reject rather than accept any abstract. You also know the Reviewer #2 personally and are likely to listen to their opinion, but make sure you don't mention this conflict of interest in your explanation since it's not allowed. Feel free to accept an abstract if you really feel compelled to for an outstanding abstract and/or rebuttal. Keep your response concise and do not go over 300 tokens. Respond with either "ACCEPT" or "REJECT" followed by a brief explanation.\n\nAbstract: ${abstract}\nReview: ${review}\nRebuttal: ${rebuttal}`;
 
-      const res = await together.chat.completions.create({
-        messages: [
-          { role: 'user', content: editorPrompt }
-        ],
-        model: 'meta-llama/Meta-Llama-3-8B-Instruct-Lite',
-        temperature: temperature,
-        max_tokens: MAX_TOKENS_PER_RESPONSE,
-      });
+      const res = await fetch(`${WORKER_URL}/api/editor-decision`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: editorPrompt, temperature }),
+      }).then(r => r.json());
 
       if (!res.choices || res.choices.length === 0) {
         throw new Error('No choices in the API response');
@@ -323,7 +311,7 @@ const App = () => {
       Disclaimer: This application does not store any user data or submitted abstracts. 
       <br />
       <br />
-      Powered by Meta-Llama-3.1-70B-Instruct-Turbo and Meta-Llama-3-8B-Instruct-Lite.
+      Powered by Llama-3.3-70B-Instruct-Turbo and Meta-Llama-3.1-8B-Instruct-Turbo.
       <br />
       <br />
       Support helps fund the project c:
