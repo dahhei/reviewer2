@@ -3,7 +3,8 @@
 // arbitrary model or max_tokens and run up the Together bill.
 
 const ALLOWED_ORIGINS = new Set([
-  'https://jaydahhei.github.io',
+  'https://reviewertwo.web.app',
+  'https://reviewertwo.firebaseapp.com',
   'http://localhost:3000',
 ]);
 

@@ -319,7 +319,7 @@ const App = () => {
       <br />
       <br />
       <br />
-      <a href="https://github.com/jaydahhei/reviewer2">Github♥</a>
+      <a href="https://github.com/dahhei/reviewer2">Github♥</a>
     </p>
     <div className="counter">
       <div>{submissionCount} Abstracts read</div>
