@@ -12,7 +12,7 @@ const TOGETHER_URL = 'https://api.together.xyz/v1/chat/completions';
 const MAX_TOKENS = 300;
 
 const REVIEWER_MODEL = 'meta-llama/Llama-3.3-70B-Instruct-Turbo';
-const EDITOR_MODEL = 'Qwen/Qwen3.8-Flash';
+const EDITOR_MODEL = 'deepseek-ai/DeepSeek-V4-Flash-0731';
 
 function corsHeaders(origin) {
   const headers = {

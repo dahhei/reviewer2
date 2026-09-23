@@ -311,7 +311,7 @@ const App = () => {
       Disclaimer: This application does not store any user data or submitted abstracts. 
       <br />
       <br />
-      Powered by Llama-3.3-70B-Instruct-Turbo and Qwen3.8-Flash.
+      Powered by Llama-3.3-70B-Instruct-Turbo and DeepSeek-V4-Flash.
       <br />
       <br />
       Support helps fund the project c:
